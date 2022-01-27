@@ -1,6 +1,6 @@
 # app-graphs
 
-[Original repository](https://github.com/skorjanc/app-graphs) (github).
+[Original repository](https://github.com/skorjanc/app-graphs) (github). [PyPI](https://pypi.org/project/app-graphs/).
 
 **app-graphs** uses [ogdf-python](https://pypi.org/project/ogdf-python/) which in turn uses [OGDF](https://ogdf.uos.de/).
 app-graphs draws a graph from data given in .xlsx format. Nodes are generated from given aplications and components as well as from edges, where node lies on edge, spliting it in two. Edges are generated between aplication and its components and from directed edges provided.

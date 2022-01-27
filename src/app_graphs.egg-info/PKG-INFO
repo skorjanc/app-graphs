@@ -5,7 +5,7 @@ Summary: Draws graphs.
 Home-page: https://github.com/skorjanc/app-graphs
 Author: Blaž Škorjanc
 Author-email: skorjanc.blazy@gmail.com
-License: UNKNOWN
+License: GPL
 Description: # app-graphs
         
         [Original repository](https://github.com/skorjanc/app-graphs) (github).
@@ -68,12 +68,11 @@ Description: # app-graphs
         ![example](https://i.imgur.com/0VCrbTh.png)
         
 Platform: UNKNOWN
-Classifier: Programing Language :: Python :: 3
-Classifier: Programing Language :: Python :: 3.6
-Classifier: Programing Language :: Python :: 3.7
-Classifier: Programing Language :: Python :: 3.8
-Classifier: Programing Language :: Python :: 3.9
-Classifier: Programing Language :: Python :: 3.10
-Classifier: License :: OSI Approved :: GNU General Public License v3 or later (GPLv3)
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.6
+Classifier: Programming Language :: Python :: 3.7
+Classifier: Programming Language :: Python :: 3.8
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
 Classifier: Operating System :: OS Independent
 Description-Content-Type: text/markdown
