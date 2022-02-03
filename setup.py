@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name='app-graphs',
-    version='0.0.1',
+    version='0.0.2',
     description='Draws graphs.',
     py_modules=["app-graphs"],
     package_dir={'': 'src'},

@@ -30,177 +30,170 @@ class graph():
         self.GA = ogdf.GraphAttributes(self.G, ogdf.GraphAttributes.all)
 
     def read(self,
-             filename_aplikacije,
-             aplikacije_sheet_name,
-             filename_vmesniki,
-             vmesniki_sheet_name,
-             aplikacije,
-             komponente,
-             vmesnik_izvor,
-             vmesnik_ponor,
-             vmesnik_smer,
-             tehnologija,
-             barve=None
+             filename_apps,
+             apps_sheet_name,
+             filename_interfaces,
+             interfaces_sheet_name,
+             apps,
+             components,
+             source,
+             target,
+             interface_direction,
+             technologies,
+             colors=None
              ):
 
-        self.barve = barve
+        self.colors = colors
 
-        self.df_apl = pd.read_excel(filename_aplikacije, engine='openpyxl',
-                                    sheet_name=aplikacije_sheet_name, header=None).dropna(how='all')
-        self.df_apl.dropna(axis=1, how='all', inplace=True)
-        self.df_apl.columns = self.df_apl.iloc[0]
-        self.df_apl = self.df_apl.iloc[1:].reset_index(drop=True)
+        self.df_app = pd.read_excel(filename_apps, engine='openpyxl',
+                                    sheet_name=apps_sheet_name, header=None).dropna(how='all')
+        self.df_app.dropna(axis=1, how='all', inplace=True)
+        self.df_app.columns = self.df_app.iloc[0]
+        self.df_app = self.df_app.iloc[1:].reset_index(drop=True)
 
-        self.df_vme = pd.read_excel(filename_vmesniki, engine='openpyxl',
-                                    sheet_name=vmesniki_sheet_name, header=None).dropna(how='all')
-        self.df_vme.dropna(axis=1, how='all', inplace=True)
-        self.df_vme.columns = self.df_vme.iloc[0]
-        self.df_vme = self.df_vme.iloc[1:].reset_index(drop=True)
+        self.df_int = pd.read_excel(filename_interfaces, engine='openpyxl',
+                                    sheet_name=interfaces_sheet_name, header=None).dropna(how='all')
+        self.df_int.dropna(axis=1, how='all', inplace=True)
+        self.df_int.columns = self.df_int.iloc[0]
+        self.df_int = self.df_int.iloc[1:].reset_index(drop=True)
 
-        stolpci_apl = self.df_apl.columns.values.tolist()
+        apps_column = self.df_app.columns.values.tolist()
 
-        if aplikacije not in stolpci_apl:
+        if apps not in apps_column:
             print(
-                f"Stolpec {aplikacije} v prvi xlsx datoteki ne obstaja.")
+                f"Column {apps} in {filename_apps}, on sheet {apps_sheet_name} does not exist.")
             return
 
-        if komponente not in stolpci_apl:
+        if components not in apps_column:
             print(
-                f"Stolpec {komponente} v prvi xlsx datoteki ne obstaja.")
+                f"Column {components} in {filename_apps}, on sheet {apps_sheet_name} does not exist.")
             return
 
-        if barve and barve not in stolpci_apl:
+        if colors and colors not in apps_column:
             print(
-                f"Stolpec {barve} v prvi xlsx datoteki ne obstaja.")
+                f"Column {colors} in {filename_apps}, on sheet {apps_sheet_name} does not exist.")
             return
 
-        stolpci_vme = self.df_vme.columns.values.tolist()
+        int_column = self.df_int.columns.values.tolist()
 
-        if vmesnik_izvor not in stolpci_vme:
+        if source not in int_column:
             print(
-                f"Stolpec {vmesnik_izvor} v drugi xlsx datoteki ne obstaja.")
+                f"Column {source} in {filename_interfaces}, on sheet {interfaces_sheet_name} does not exist.")
             return
 
-        if vmesnik_ponor not in stolpci_vme:
+        if target not in int_column:
             print(
-                f"Stolpec {vmesnik_ponor} v drugi xlsx datoteki ne obstaja.")
+                f"Column {target} in {filename_interfaces}, on sheet {interfaces_sheet_name} does not exist.")
             return
 
-        if vmesnik_smer not in stolpci_vme:
+        if interface_direction not in int_column:
             print(
-                f"Stolpec {vmesnik_smer} v drugi xlsx datoteki ne obstaja.")
+                f"Column {interface_direction} in {filename_interfaces}, on sheet {interfaces_sheet_name} does not exist.")
             return
 
-        if tehnologija not in stolpci_vme:
+        if technologies not in int_column:
             print(
-                f"Stolpec {tehnologija} v drugi xlsx datoteki ne obstaja.")
+                f"Column {technologies} in {filename_interfaces}, on sheet {interfaces_sheet_name} does not exist.")
             return
 
         optionsRight = ['>', '->', '-->', '--->', '---->', 'desno', 'right']
         optionsLeft = ['<', '<-', '<--', '<---', '<----', 'levo', 'left']
 
-        for i in range(len(self.df_vme)):
-            if pd.isnull(self.df_vme[vmesnik_smer][i]):
+        for i in range(len(self.df_int)):
+            if pd.isnull(self.df_int[interface_direction][i]):
                 continue
-            elif str(self.df_vme[vmesnik_smer][i]).lower() in optionsRight:
-                self.df_vme[vmesnik_smer][i] = 'forward'
-            elif str(self.df_vme[vmesnik_smer][i]).lower() in optionsLeft:
-                self.df_vme[vmesnik_smer][i] = 'back'
+            elif str(self.df_int[interface_direction][i]).lower() in optionsRight:
+                self.df_int[interface_direction][i] = 'forward'
+            elif str(self.df_int[interface_direction][i]).lower() in optionsLeft:
+                self.df_int[interface_direction][i] = 'back'
             else:
-                self.df_vme[vmesnik_smer][i] = 'both'
+                self.df_int[interface_direction][i] = 'both'
 
-        self.df_apl.rename(
-            columns={aplikacije: 'aplikacije', komponente: 'komponente'}, inplace=True)
-        if barve:
-            self.df_vme.rename(columns={barve: 'barve'}, inplace=True)
+        self.df_app.rename(
+            columns={apps: 'apps', components: 'components'}, inplace=True)
+        if colors:
+            self.df_int.rename(columns={colors: 'colors'}, inplace=True)
 
-        self.df_vme.rename(columns={vmesnik_izvor: 'vmesnik_izvor', vmesnik_ponor: 'vmesnik_ponor',
-                           vmesnik_smer: 'vmesnik_smer', tehnologija: 'tehnologija'}, inplace=True)
+        self.df_int.rename(columns={source: 'source', target: 'target',
+                           interface_direction: 'interface_direction', technologies: 'technologies'}, inplace=True)
 
     def draw(self):
-        # dodajanje aplikacij, komponent in povezav med aplikacijami in njihovimi komponentami
-        aplikacija = None
+        j = -1
+        # adding apps, components as edges and edges between app and it's components.
+        app = None
         NODES = {}
         b = None
-        for i in range(self.df_apl.shape[0]):
-            if pd.isnull(self.df_apl['aplikacije'][i]) == False:
-                aplikacija = self.df_apl['aplikacije'][i]
+        for i in range(self.df_app.shape[0]):
+            if pd.isnull(self.df_app['apps'][i]) == False:
+                j = j + 1
+                j = j % 15
+                app = self.df_app['apps'][i]
                 node = self.G.newNode()
-                self.GA.label[node] = aplikacija
-                self.GA.width[node] = 7 * len(aplikacija)
-                NODES[aplikacija] = node
+                self.GA.label[node] = app
+                self.GA.width[node] = 7 * len(app)
+                NODES[app] = node
 
-                if self.barve:
-                    barva = self.df_apl['barve'][i]
-                    if pd.isnull(self.df_apl['aplikacije'][i]):
-                        return f'Barva za aplikacijo: {aplikacija} ni podana'
-                    if barva in default_colors:
-                        b = default_colors[barva]
+                if self.colors:
+                    color = self.df_app['colors'][i]
+                    if pd.isnull(self.df_app['apps'][i]):
+                        b = default_colors['gray']
+                    if color in default_colors:
+                        b = default_colors[color]
                     else:
-                        h = barva.lstrip('#')
+                        h = color.lstrip('#')
                         r, g, b = [int(h[i:i+2], 16) for i in [0, 2, 4]]
                         b = ogdf.Color(r=r, g=g, b=b, a=204)
                 else:
-                    j = i % 15
                     b = list(default_colors.items())[j][1]
                 self.GA.fillColor[node] = b
                 self.GA.strokeWidth[node] = 2
-                #self.GA.strokeColor[node] = b
 
-            elif aplikacija and pd.isnull(self.df_apl['komponente'][i]) == False:
-                podaplikacija = self.df_apl['komponente'][i]
+            elif app and pd.isnull(self.df_app['components'][i]) == False:
+                podaplikacija = self.df_app['components'][i]
                 node = self.G.newNode()
                 self.GA.label[node] = podaplikacija
                 self.GA.width[node] = 7 * len(podaplikacija)
                 NODES[podaplikacija] = node
                 self.GA.fillColor[node] = b
-                #self.GA.strokeColor[node] = b
                 self.GA.strokeWidth[node] = 0
-                edge = self.G.newEdge(NODES[aplikacija], node)
+                edge = self.G.newEdge(NODES[app], node)
                 self.GA.strokeColor[edge] = b
+                self.GA.strokeWidth[edge] = 2
                 self.GA.arrowType[edge] = 0
 
-        # dodajanje vmesnikov in povezav
+        # adding interfaces, each interface is represented with node and two edges.
 
-        for i in range(self.df_vme.shape[0]):
-            if pd.isnull(self.df_vme['vmesnik_izvor'][i]) == False and pd.isnull(self.df_vme['vmesnik_ponor'][i]) == False:
+        for i in range(self.df_int.shape[0]):
+            if pd.isnull(self.df_int['source'][i]) == False and pd.isnull(self.df_int['target'][i]) == False:
                 node = self.G.newNode()
                 self.GA.shape[node] = ogdf.Shape.Ellipse
-                if pd.isnull(self.df_vme['tehnologija'][i]) == False:
-                    self.GA.label[node] = self.df_vme['tehnologija'][i]
+                if pd.isnull(self.df_int['technologies'][i]) == False:
+                    self.GA.label[node] = self.df_int['technologies'][i]
                     self.GA.width[node] = 10 * \
-                        len(self.df_vme['tehnologija'][i])
-                if self.df_vme['vmesnik_smer'][i] == 'forward':
+                        len(self.df_int['technologies'][i])
+                if self.df_int['interface_direction'][i] == 'forward':
                     edge1 = self.G.newEdge(
-                        NODES[self.df_vme['vmesnik_izvor'][i]], node)
+                        NODES[self.df_int['source'][i]], node)
                     edge2 = self.G.newEdge(
-                        node, NODES[self.df_vme['vmesnik_ponor'][i]])
-                elif self.df_vme['vmesnik_smer'][i] == 'back':
+                        node, NODES[self.df_int['target'][i]])
+                elif self.df_int['interface_direction'][i] == 'back':
                     edge1 = self.G.newEdge(
-                        node, NODES[self.df_vme['vmesnik_izvor'][i]])
+                        node, NODES[self.df_int['source'][i]])
                     edge2 = self.G.newEdge(
-                        NODES[self.df_vme['vmesnik_ponor'][i]], node)
+                        NODES[self.df_int['target'][i]], node)
                 else:
                     edge1 = self.G.newEdge(
-                        node, NODES[self.df_vme['vmesnik_izvor'][i]])
+                        node, NODES[self.df_int['source'][i]])
                     edge2 = self.G.newEdge(
-                        NODES[self.df_vme['vmesnik_ponor'][i]], node)
+                        NODES[self.df_int['target'][i]], node)
                     edgeArrow = ogdf.EdgeArrow.Both
                     self.GA.arrowType[edge1] = edgeArrow
                     self.GA.arrowType[edge2] = edgeArrow
+
+        # calling planarization layout algorithm on graph
 
         PL = ogdf.PlanarizationLayout()
         PL.call(self.GA)
 
     def save_svg(self, filename):
         ogdf.GraphIO.write(self.GA, filename+".svg", ogdf.GraphIO.drawSVG)
-
-    def save(self, filename='example', format='DOT'):
-        available_formats = ['GML', 'DOT']
-        if format not in available_formats:
-            return f'Format is not supported. \nPlease chose format from the list:{available_formats}'
-        switch = {
-            'GML': lambda: ogdf.GraphIO.write(self.GA, filename+'.gml', ogdf.GraphIO.writeGML),
-            'DOT': lambda: ogdf.GraphIO.write(self.GA, filename+'.dot', ogdf.GraphIO.writeDOT)
-        }
-        switch[format]()
